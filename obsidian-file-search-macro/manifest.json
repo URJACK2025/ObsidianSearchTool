@@ -1,0 +1,10 @@
+{
+    "id": "file-search-macro",
+    "name": "File Search Macro",
+    "version": "0.1.0",
+    "minAppVersion": "0.15.0",
+    "description": "在指定文件夹中搜索文件名",
+    "author": "You",
+    "authorUrl": "",
+    "isDesktopOnly": false
+}

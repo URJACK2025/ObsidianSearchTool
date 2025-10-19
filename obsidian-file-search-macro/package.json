@@ -1,0 +1,19 @@
+{
+  "name": "obsidian-file-search-macro",
+  "version": "0.1.0",
+  "main": "main.js",
+  "scripts": {
+    "dev": "tsc -w",
+    "build": "tsc"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "devDependencies": {
+    "@types/node": "^24.8.1",
+    "obsidian": "^1.10.0",
+    "tslib": "^2.8.1",
+    "typescript": "^5.9.3"
+  }
+}
