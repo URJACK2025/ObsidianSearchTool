@@ -26,22 +26,22 @@ class FileSearchMacroPlugin extends obsidian_1.Plugin {
             return;
         try {
             // 调试信息1：显示原始输入的文件名
-            new obsidian_1.Notice(`调试1-原始文件名: ${fileName}`, 5000);
+            // new Notice(`调试1-原始文件名: ${fileName}`, 5000);
             // 调试信息2：显示目标文件夹
-            new obsidian_1.Notice(`调试2-目标文件夹: ${this.settings.targetFolder}`, 5000);
+            // new Notice(`调试2-目标文件夹: ${this.settings.targetFolder}`, 5000);
             // 构造原始查询字符串，使用冒号和引号格式
             // 按照用户提供的正确格式：path:"Area/10-Tools/" file:"nmap"
             const rawQueryString = `path:"${this.settings.targetFolder}" file:"${fileName}"`;
             // 调试信息3：显示原始查询字符串
-            new obsidian_1.Notice(`调试3-原始查询字符串: ${rawQueryString}`, 5000);
+            // new Notice(`调试3-原始查询字符串: ${rawQueryString}`, 5000);
             // 对整个查询字符串进行完整的URL编码，确保所有特殊字符都被编码
             const fullyEncodedQuery = encodeURIComponent(rawQueryString);
             // 调试信息4：显示完全编码后的查询
-            new obsidian_1.Notice(`调试4-完全编码查询: ${fullyEncodedQuery}`, 5000);
+            // new Notice(`调试4-完全编码查询: ${fullyEncodedQuery}`, 5000);
             // 构造符合要求的Obsidian搜索URI
             const obsidianSearchUri = `obsidian://search?query=${fullyEncodedQuery}`;
             // 调试信息5：显示最终搜索URI
-            new obsidian_1.Notice(`调试5-搜索URI: ${obsidianSearchUri}`, 5000);
+            // new Notice(`调试5-搜索URI: ${obsidianSearchUri}`, 5000);
             // 尝试使用openLinkText方法打开URI
             // this.app.workspace.openLinkText(obsidianSearchUri, '', true);
             window.open(obsidianSearchUri, '_blank');
