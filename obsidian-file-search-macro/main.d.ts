@@ -1,6 +1,7 @@
 import { Plugin } from 'obsidian';
 interface PluginSettings {
-    targetFolder: string;
+    targetFoldersCount: number;
+    targetFolders: string[];
 }
 export default class FileSearchMacroPlugin extends Plugin {
     settings: PluginSettings;

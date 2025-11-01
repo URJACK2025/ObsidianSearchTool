@@ -3,7 +3,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 // main.ts
 const obsidian_1 = require("obsidian");
 const DEFAULT_SETTINGS = {
-    targetFolder: 'Area/10-Tools/'
+    targetFoldersCount: 1,
+    targetFolders: ['Area/10-Tools/']
 };
 class FileSearchMacroPlugin extends obsidian_1.Plugin {
     settings = DEFAULT_SETTINGS;
@@ -29,9 +30,19 @@ class FileSearchMacroPlugin extends obsidian_1.Plugin {
             // new Notice(`调试1-原始文件名: ${fileName}`, 5000);
             // 调试信息2：显示目标文件夹
             // new Notice(`调试2-目标文件夹: ${this.settings.targetFolder}`, 5000);
-            // 构造原始查询字符串，使用冒号和引号格式
-            // 按照用户提供的正确格式：path:"Area/10-Tools/" file:"nmap"
-            const rawQueryString = `path:"${this.settings.targetFolder}" file:"${fileName}"`;
+            // 构造原始查询字符串，支持多个文件夹路径
+            // 按照用户提供的正确格式：(path:"folder1" OR path:"folder2") file:"filename"
+            const validPaths = this.settings.targetFolders.filter(path => path.trim());
+            let pathQueries = '';
+            if (validPaths.length > 1) {
+                // 多个文件夹路径时，需要用括号括起来
+                pathQueries = `(${validPaths.map(path => `path:"${path.trim()}"`).join(' OR ')})`;
+            }
+            else if (validPaths.length === 1 && validPaths[0]) {
+                // 单个文件夹路径时，不需要括号，并确保validPaths[0]存在
+                pathQueries = `path:"${validPaths[0].trim()}"`;
+            }
+            const rawQueryString = `${pathQueries} file:"${fileName}"`;
             // 调试信息3：显示原始查询字符串
             // new Notice(`调试3-原始查询字符串: ${rawQueryString}`, 5000);
             // 对整个查询字符串进行完整的URL编码，确保所有特殊字符都被编码
@@ -112,16 +123,51 @@ class FileSearchMacroSettingTab extends obsidian_1.PluginSettingTab {
         const { containerEl } = this;
         containerEl.empty();
         containerEl.createEl('h2', { text: '文件搜索宏设置' });
+        // 添加文件夹数量选择
         new obsidian_1.Setting(containerEl)
-            .setName('目标文件夹路径')
-            .setDesc('输入要搜索的文件夹路径，如：Area/10-Tools/')
-            .addText(text => text
-            .setPlaceholder('例如：Area/10-Tools/')
-            .setValue(this.plugin.settings.targetFolder)
-            .onChange(async (value) => {
-            this.plugin.settings.targetFolder = value;
-            await this.plugin.saveSettings();
-        }));
+            .setName('目标文件夹数量')
+            .setDesc('选择要配置的文件夹数量（1-6）')
+            .addDropdown(dropdown => {
+            // 添加1-6个选项
+            for (let i = 1; i <= 6; i++) {
+                dropdown.addOption(i.toString(), `${i} 个文件夹`);
+            }
+            // 设置当前值
+            dropdown.setValue(this.plugin.settings.targetFoldersCount.toString());
+            // 处理变化事件
+            dropdown.onChange(async (value) => {
+                const count = parseInt(value);
+                const currentCount = this.plugin.settings.targetFolders.length;
+                // 调整数组大小
+                if (count > currentCount) {
+                    // 增加数组元素
+                    for (let i = currentCount; i < count; i++) {
+                        this.plugin.settings.targetFolders.push('');
+                    }
+                }
+                else if (count < currentCount) {
+                    // 减少数组元素
+                    this.plugin.settings.targetFolders = this.plugin.settings.targetFolders.slice(0, count);
+                }
+                this.plugin.settings.targetFoldersCount = count;
+                await this.plugin.saveSettings();
+                // 重新渲染设置页面
+                this.display();
+            });
+        });
+        // 根据选择的数量显示相应的文件夹路径输入框
+        for (let i = 0; i < this.plugin.settings.targetFoldersCount; i++) {
+            new obsidian_1.Setting(containerEl)
+                .setName(`目标文件夹路径 ${i + 1}`)
+                .setDesc('输入要搜索的文件夹路径，如：Area/10-Tools/')
+                .addText(text => text
+                .setPlaceholder('例如：Area/10-Tools/')
+                .setValue(this.plugin.settings.targetFolders[i] || '')
+                .onChange(async (value) => {
+                this.plugin.settings.targetFolders[i] = value;
+                await this.plugin.saveSettings();
+            }));
+        }
     }
 }
 //# sourceMappingURL=main.js.map
